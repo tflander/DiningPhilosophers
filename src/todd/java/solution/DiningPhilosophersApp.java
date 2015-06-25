@@ -1,4 +1,4 @@
-package todd.java;
+package todd.java.solution;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +21,11 @@ public class DiningPhilosophersApp {
 			executor.submit(new EatingTask("lunch", phil, phils));
 		}
 		Thread.sleep(4000);
+		
 		for (Philosopher phil : phils) {
 			executor.submit(new EatingTask("dinner", phil, phils));
 		}
+		
 		
 		executor.shutdown();
 		executor.awaitTermination(5, TimeUnit.MINUTES);
