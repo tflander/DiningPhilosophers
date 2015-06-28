@@ -18,12 +18,16 @@ public class DiningPhilosophersApp {
 
 		ExecutorService executor = Executors.newFixedThreadPool(10);
 		for (Philosopher phil : phils) {
-			executor.submit(new EatingTask("lunch", phil, phils));
+			executor.submit(new ThinkingAndEatingTask("lunch", phil, phils));
 		}
 		Thread.sleep(4000);
+		System.out.println("== lunch is over ==");
+		
 		for (Philosopher phil : phils) {
-			executor.submit(new EatingTask("dinner", phil, phils));
+			phil.setTimeThinkingInTenthsOfASecond(0);
+			executor.submit(new ThinkingAndEatingTask("dinner", phil, phils));
 		}
+		
 		
 		executor.shutdown();
 		executor.awaitTermination(5, TimeUnit.MINUTES);
