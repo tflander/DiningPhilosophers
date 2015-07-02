@@ -1,4 +1,4 @@
-package todd.java.stoner2;
+package todd.java.stoner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class StonerApp2 {
+public class StonerApp {
 
 	public static void main(String[] args) throws InterruptedException {
 

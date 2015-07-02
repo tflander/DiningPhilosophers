@@ -1,4 +1,4 @@
-package todd.java.stoner2;
+package todd.java.stoner;
 
 
 public enum SmokingItem {
