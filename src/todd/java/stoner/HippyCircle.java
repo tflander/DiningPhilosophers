@@ -33,6 +33,11 @@ public class HippyCircle {
 	public synchronized void putStashOnTable(SmokingItem item) {
 		stashOnTable.add(item);
 	}
+	
+	public List<SmokingItem> getItemsOnTable() {
+		return stashOnTable;
+	}
+	
 
 	public Stoner getCurrentStoner() {
 		return currentStoner;
@@ -73,4 +78,5 @@ public class HippyCircle {
 	public synchronized void setJoint(Joint joint) {
 		this.joint = joint;
 	}
+
 }

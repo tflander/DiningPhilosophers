@@ -19,38 +19,50 @@ public class Stoner implements Runnable {
 			if (smokingItem != owned) {
 				notOwned.add(smokingItem);
 			}
-		}		
+		}
 	}
 
 	public void handleTransitions() throws InterruptedException {
 		if (nextStoner == null) {
 			nextStoner = circle.getNextStonerFrom(this);
 		}
-		
-		switch(circle.getState()) {
+
+		switch (circle.getState()) {
 		case NotSmoking:
-			circle.setState(StonerState.Rolling);
-			break;
-		case Rolling:
-			if(isMyTurn() && necessaryItemsOnTable()) {
-				rollJoint();
+			if (isMyTurn()) {
+				if (necessaryItemsOnTable()) {
+					rollJoint();
+				}
+			} else {
+				putItemOnTableIfNecessary();
 			}
 			break;
 		case Smoking:
-			if(isMyTurn()) {
+			if (isMyTurn()) {
 				tokeAndPass();
 			}
 			break;
 		}
 	}
 
+	private void putItemOnTableIfNecessary() {
+		if (!circle.getItemsOnTable().contains(owned)) {
+			System.out.println("Putting " + owned + " on the table");
+			circle.putStashOnTable(owned);
+		}
+	}
+
 	private boolean necessaryItemsOnTable() {
-		return true;  // temp for now
+		List<SmokingItem> itemsOnTable = circle.getItemsOnTable();
+		return !itemsOnTable.contains(owned) && itemsOnTable.size() == 2;
 	}
 
 	private void rollJoint() {
+		List<SmokingItem> stash = circle.takeStashOnTable();
 		Joint joint = new Joint();
-		System.out.println("Stoner who owns " + this.owned + " rolled a " + joint.getRemainingHits() + " hit joint.");
+		System.out.println("Stoner who owns " + this.owned + " takes " + stash
+				+ " and adds his " + owned + " to roll a "
+				+ joint.getRemainingHits() + " hit joint.");
 		circle.setJoint(joint);
 		circle.setState(StonerState.Smoking);
 	}
@@ -58,11 +70,15 @@ public class Stoner implements Runnable {
 	private void tokeAndPass() {
 		Joint joint = circle.getJoint();
 		joint.takeHit();
-		if(joint.getRemainingHits() > 0) {
-			System.out.println("Stoner who owns " + this.owned + " takes a hit (" + joint.getRemainingHits() + " left) and passes to the " + nextStoner.getOwnedItem() + " dude.");
+		if (joint.getRemainingHits() > 0) {
+			System.out.println("Stoner who owns " + this.owned
+					+ " takes a hit (" + joint.getRemainingHits()
+					+ " left) and passes to the " + nextStoner.getOwnedItem()
+					+ " dude.");
 			circle.setCurrentStoner(nextStoner);
 		} else {
-			System.out.println("Stoner who owns " + this.owned + " takes the last hit.");
+			System.out.println("Stoner who owns " + this.owned
+					+ " takes the last hit.");
 			circle.setState(StonerState.NotSmoking);
 		}
 	}
@@ -79,7 +95,9 @@ public class Stoner implements Runnable {
 	public void run() {
 		while (!Thread.interrupted()) {
 			try {
-				handleTransitions();
+				synchronized(circle) {
+					handleTransitions();
+				}
 			} catch (InterruptedException e) {
 				return;
 			} catch (Throwable t) {
